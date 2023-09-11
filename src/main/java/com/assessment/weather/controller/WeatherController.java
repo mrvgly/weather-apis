@@ -1,8 +1,12 @@
 package com.assessment.weather.controller;
 
+import com.assessment.weather.controller.validation.CityNameConstraint;
 import com.assessment.weather.dto.WeatherDto;
 import com.assessment.weather.service.WeatherService;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/v1/api/weather")
+@Validated
 public class WeatherController {
     private final WeatherService weatherService;
 
@@ -18,7 +23,8 @@ public class WeatherController {
     }
 
     @GetMapping("/{city}")
-    public ResponseEntity<WeatherDto> getWeather(@PathVariable("city") String city) {
+    @RateLimiter(name = "basic")
+    public ResponseEntity<WeatherDto> getWeather(@PathVariable("city") @CityNameConstraint @NotBlank String city) {
         return ResponseEntity.ok(weatherService.getWeatherByCityName(city));
     }
 }
