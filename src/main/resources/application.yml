@@ -11,6 +11,8 @@ spring:
 weather-stack:
   api-url: http://api.weatherstack.com/current
   api-key: ${API_KEY:default}
+  cache-name: weathers
+  cache-ttl: 1800000 #30 min
 
 resilience4j:
   ratelimiter:
